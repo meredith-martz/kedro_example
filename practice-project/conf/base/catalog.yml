@@ -6,3 +6,12 @@
 mpg:
   type: pandas.CSVDataSet
   filepath: data/01_raw/mpg.csv
+
+mpg_clean:
+  type: pandas.ParquetDataSet
+  filepath: data/02_intermediate/mpg_clean.pq
+
+regressor:
+  type: pickle.PickleDataSet
+  filepath: data/06_models/regressor.pickle
+  versioned: true
