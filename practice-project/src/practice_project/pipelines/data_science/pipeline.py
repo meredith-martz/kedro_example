@@ -9,7 +9,7 @@ from .nodes import split_data, train_model, apply_model, report_r_squared, drop_
 
 
 def create_training_pipeline(**kwargs) -> Pipeline:
-    return pipeline(
+    pipeline_instance = pipeline(
         [
             node(
                 func=split_data,
@@ -37,6 +37,25 @@ def create_training_pipeline(**kwargs) -> Pipeline:
             ),
         ]
     )
+    training_pipeline_1 = pipeline(
+        pipe=pipeline_instance,
+        namespace="active_training_pipeline",
+        inputs="mpg_clean",
+    )
+    training_pipeline_2 = pipeline(
+        pipe=pipeline_instance,
+        namespace="candidate_training_pipeline",
+        inputs="mpg_clean",
+    )
+    return training_pipeline_1 + training_pipeline_2
+
+    """
+    return pipeline(
+        pipe=training_pipeline_1 + training_pipeline_2,
+        inputs="mpg_clean",
+        namespace="model_training",
+    )
+    """
 
 
 def create_inference_pipeline(**kwargs) -> Pipeline:
@@ -50,7 +69,7 @@ def create_inference_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=apply_model,
-                inputs=["regressor", "X_inference"],
+                inputs=["active_training_pipeline.regressor", "X_inference"],
                 outputs="y_inference_pred",
                 name="inference_apply_model_node",
             ),
@@ -60,5 +79,8 @@ def create_inference_pipeline(**kwargs) -> Pipeline:
                 outputs=None,
                 name="inference_report_r_squared_node",
             ),
-        ]
+        ],
+        namespace="model_inference",
+        inputs=["active_training_pipeline.regressor", "mpg_clean"],
+        outputs=None,
     )

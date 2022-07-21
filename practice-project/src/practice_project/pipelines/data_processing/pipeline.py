@@ -22,7 +22,10 @@ def create_pipeline(**kwargs) -> Pipeline:
                 outputs="mpg_clean",
                 name="handle_na_node"
             ),
-        ]
+        ],
+        namespace="data_processing",
+        inputs="mpg",
+        outputs="mpg_clean",
     )
 
 
