@@ -5,10 +5,10 @@ generated using Kedro 0.18.2
 
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import split_data, train_model, apply_model, report_r_squared
+from .nodes import split_data, train_model, apply_model, report_r_squared, drop_inference_target
 
 
-def create_pipeline(**kwargs) -> Pipeline:
+def create_training_pipeline(**kwargs) -> Pipeline:
     return pipeline(
         [
             node(
@@ -27,13 +27,38 @@ def create_pipeline(**kwargs) -> Pipeline:
                 func=apply_model,
                 inputs=["regressor", "X_test"],
                 outputs="y_test_pred",
-                name="apply_model_node",
+                name="training_apply_model_node",
             ),
             node(
                 func=report_r_squared,
                 inputs=["y_test_pred", "y_test"],
                 outputs=None,
-                name="report_r_squared_node",
+                name="training_report_r_squared_node",
+            ),
+        ]
+    )
+
+
+def create_inference_pipeline(**kwargs) -> Pipeline:
+    return pipeline(
+        [
+            node(
+                func=drop_inference_target,
+                inputs=["mpg_clean", "parameters"],
+                outputs=["X_inference", "y_inference"],
+                name="drop_inference_target_node",
+            ),
+            node(
+                func=apply_model,
+                inputs=["regressor", "X_inference"],
+                outputs="y_inference_pred",
+                name="inference_apply_model_node",
+            ),
+            node(
+                func=report_r_squared,
+                inputs=["y_inference_pred", "y_inference"],
+                outputs=None,
+                name="inference_report_r_squared_node",
             ),
         ]
     )

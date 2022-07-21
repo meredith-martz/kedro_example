@@ -9,7 +9,7 @@ def handle_na(x: pd.DataFrame) -> pd.DataFrame:
     return x.dropna()
 
 
-def remove_name_of_car(x: pd.DataFrame) -> pd.DataFrame:
+def remove_categorical(x: pd.DataFrame) -> pd.DataFrame:
     return x.drop(columns=['name', 'origin'])
 
 

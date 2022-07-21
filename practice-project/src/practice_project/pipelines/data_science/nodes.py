@@ -28,6 +28,19 @@ def split_data(data: pd.DataFrame, parameters: Dict) -> Tuple:
 
     return X_train, X_test, y_train, y_test
 
+def drop_inference_target(data: pd.DataFrame, parameters: Dict) -> Tuple:
+    """
+
+    :param data: Data containing features and target.
+    :param parameters: Parameters defined in parameters/data_science.yml.
+    :return: The data split into X and y where X is the features and y is the target.
+    """
+
+    X = data.drop(columns=parameters["target_column"])
+    y = data[parameters["target_column"]]
+
+    return X, y
+
 
 def train_model(X_train: pd.DataFrame, y_train: pd.Series) -> RandomForestRegressor:
     """Trains the random forest regression model.
@@ -73,3 +86,4 @@ def report_r_squared(y_pred: pd.Series, y_true: pd.Series):
     r2 = r2_score(y_true, y_pred)
     logger = logging.getLogger(__name__)
     logger.info("Model has r-squared of %.3f on provided data.", r2)
+
