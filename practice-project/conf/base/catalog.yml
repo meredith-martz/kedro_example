@@ -11,13 +11,9 @@ mpg_clean:
   type: pandas.ParquetDataSet
   filepath: data/02_intermediate/mpg_clean.pq
 
-active_training_pipeline.regressor:
+regressor:
   type: pickle.PickleDataSet
-  filepath: data/06_models/active_regressor.pickle
+  filepath: data/06_models/regressor.pickle
   versioned: true
 
-candidate_training_pipeline.regressor:
-  type: pickle.PickleDataSet
-  filepath: data/06_models/candidate_regressor.pickle
-  versioned: true
 

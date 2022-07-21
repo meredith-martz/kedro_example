@@ -4,13 +4,18 @@
 # Documentation for this file format can be found in "Parameters"
 # Link: https://kedro.readthedocs.io/en/0.18.2/kedro_project_setup/configuration.html#parameters
 
-#data_science:
-    active_training_pipeline:
-        test_size: 0.2
-        random_state: 3
-        target_column: mpg
+data_science:
+  active_modelling_pipeline:
+    model_options:
+      test_size: 0.2
+      random_state: 3
+      target_column: mpg
+  candidate_modelling_pipeline:
+    model_options:
+      test_size: 0.2
+      random_state: 3
+      target_column: mpg
 
-    candidate_training_pipeline:
-        test_size: 0.2
-        random_state: 8
-        target_column: mpg
+model_inference:
+  model_options:
+    target_column: mpg

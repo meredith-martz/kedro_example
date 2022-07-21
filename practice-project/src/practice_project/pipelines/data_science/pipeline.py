@@ -7,9 +7,9 @@ from kedro.pipeline import Pipeline, node, pipeline
 
 from .nodes import split_data, train_model, apply_model, report_r_squared, drop_inference_target
 
-
+"""
 def create_training_pipeline(**kwargs) -> Pipeline:
-    pipeline_instance = pipeline(
+    return pipeline(
         [
             node(
                 func=split_data,
@@ -35,27 +35,57 @@ def create_training_pipeline(**kwargs) -> Pipeline:
                 outputs=None,
                 name="training_report_r_squared_node",
             ),
+        ],
+        namespace="model_training",
+        inputs="mpg_clean",
+        outputs="regressor",
+    )
+"""
+def create_training_pipeline(**kwargs) -> Pipeline:
+    pipeline_instance = pipeline(
+        [
+            node(
+                func=split_data,
+                inputs=["mpg_clean", "params:model_options"],
+                outputs=["X_train", "X_test", "y_train", "y_test"],
+                name="split_data_node",
+            ),
+            node(
+                func=train_model,
+                inputs=["X_train", "y_train"],
+                outputs="regressor",
+                name="train_model_node",
+            ),
+            node(
+                func=apply_model,
+                inputs=["regressor", "X_test"],
+                outputs="y_test_pred",
+                name="training_apply_model_node",
+            ),
+            node(
+                func=report_r_squared,
+                inputs=["y_test_pred", "y_test"],
+                outputs=None,
+                name="training_report_r_squared_node",
+            ),
         ]
     )
-    training_pipeline_1 = pipeline(
+    ds_pipeline_1 = pipeline(
         pipe=pipeline_instance,
-        namespace="active_training_pipeline",
         inputs="mpg_clean",
+        outputs="regressor",
+        namespace="active_modelling_pipeline",
     )
-    training_pipeline_2 = pipeline(
+    ds_pipeline_2 = pipeline(
         pipe=pipeline_instance,
-        namespace="candidate_training_pipeline",
         inputs="mpg_clean",
+        namespace="candidate_modelling_pipeline",
     )
-    return training_pipeline_1 + training_pipeline_2
-
-    """
     return pipeline(
-        pipe=training_pipeline_1 + training_pipeline_2,
+        pipe=ds_pipeline_1 + ds_pipeline_2,
         inputs="mpg_clean",
-        namespace="model_training",
+        namespace="data_science",
     )
-    """
 
 
 def create_inference_pipeline(**kwargs) -> Pipeline:
@@ -63,13 +93,13 @@ def create_inference_pipeline(**kwargs) -> Pipeline:
         [
             node(
                 func=drop_inference_target,
-                inputs=["mpg_clean", "parameters"],
+                inputs=["mpg_clean", "params:model_options"],
                 outputs=["X_inference", "y_inference"],
                 name="drop_inference_target_node",
             ),
             node(
                 func=apply_model,
-                inputs=["active_training_pipeline.regressor", "X_inference"],
+                inputs=["regressor", "X_inference"],
                 outputs="y_inference_pred",
                 name="inference_apply_model_node",
             ),
@@ -81,6 +111,6 @@ def create_inference_pipeline(**kwargs) -> Pipeline:
             ),
         ],
         namespace="model_inference",
-        inputs=["active_training_pipeline.regressor", "mpg_clean"],
+        inputs=["regressor", "mpg_clean"],
         outputs=None,
     )
