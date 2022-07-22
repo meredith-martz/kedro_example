@@ -8,7 +8,18 @@ from typing import Tuple, Dict, Any
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, mean_absolute_error, max_error
+
+
+def drop_features(data: pd.DataFrame, parameters:Dict):
+    """
+
+    :param data: Data containing features and target.
+    :param parameters: Parameters defined in parameters/data_science.yml.
+    :return: Data with a limited set of features and the target.
+    """
+    data = data[parameters["features"]]
+    return data, {"features": data.columns.tolist()}
 
 
 def split_data(data: pd.DataFrame, parameters: Dict) -> Tuple:
@@ -84,6 +95,9 @@ def report_r_squared(y_pred: pd.Series, y_true: pd.Series):
     y_true = y_true.reset_index(drop=True)
 
     r2 = r2_score(y_true, y_pred)
+    mae = mean_absolute_error(y_true, y_pred)
+    me = max_error(y_true, y_pred)
     logger = logging.getLogger(__name__)
     logger.info("Model has r-squared of %.3f on provided data.", r2)
+    return {"r2_score": r2, "mae": mae, "max_error": me}
 

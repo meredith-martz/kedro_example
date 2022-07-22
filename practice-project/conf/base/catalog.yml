@@ -16,4 +16,10 @@ regressor:
   filepath: data/06_models/regressor.pickle
   versioned: true
 
+data_science.active_modelling_pipeline.metrics:
+  type: tracking.MetricsDataSet
+  filepath: data/09_tracking/metrics.json
 
+data_science.active_modelling_pipeline.feature_set:
+  type: tracking.JSONDataSet
+  filepath: data/09_tracking/feature_set.json

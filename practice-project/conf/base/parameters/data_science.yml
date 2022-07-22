@@ -8,13 +8,35 @@ data_science:
   active_modelling_pipeline:
     model_options:
       test_size: 0.2
-      random_state: 3
+      random_state: 1
       target_column: mpg
+      features:
+        - mpg
+        - cylinders
+        - displacement
+        - horsepower
+        - weight
+        - acceleration
+        - model_year
+        - europe
+        - japan
+        - usa
   candidate_modelling_pipeline:
     model_options:
       test_size: 0.2
       random_state: 3
       target_column: mpg
+      features:
+        - mpg
+        - cylinders
+        - displacement
+        - horsepower
+        - weight
+        - acceleration
+        - model_year
+        - europe
+        - japan
+        - usa
 
 model_inference:
   model_options:

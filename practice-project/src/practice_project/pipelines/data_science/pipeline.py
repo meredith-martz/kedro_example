@@ -5,48 +5,21 @@ generated using Kedro 0.18.2
 
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import split_data, train_model, apply_model, report_r_squared, drop_inference_target
+from .nodes import drop_features, split_data, train_model, apply_model, report_r_squared, drop_inference_target
 
-"""
-def create_training_pipeline(**kwargs) -> Pipeline:
-    return pipeline(
-        [
-            node(
-                func=split_data,
-                inputs=["mpg_clean", "parameters"],
-                outputs=["X_train", "X_test", "y_train", "y_test"],
-                name="split_data_node",
-            ),
-            node(
-                func=train_model,
-                inputs=["X_train", "y_train"],
-                outputs="regressor",
-                name="train_model_node",
-            ),
-            node(
-                func=apply_model,
-                inputs=["regressor", "X_test"],
-                outputs="y_test_pred",
-                name="training_apply_model_node",
-            ),
-            node(
-                func=report_r_squared,
-                inputs=["y_test_pred", "y_test"],
-                outputs=None,
-                name="training_report_r_squared_node",
-            ),
-        ],
-        namespace="model_training",
-        inputs="mpg_clean",
-        outputs="regressor",
-    )
-"""
+
 def create_training_pipeline(**kwargs) -> Pipeline:
     pipeline_instance = pipeline(
         [
             node(
-                func=split_data,
+                func=drop_features,
                 inputs=["mpg_clean", "params:model_options"],
+                outputs=["mpg_reduced_feature_set", "feature_set"],
+                name="drop_features_node",
+            ),
+            node(
+                func=split_data,
+                inputs=["mpg_reduced_feature_set", "params:model_options"],
                 outputs=["X_train", "X_test", "y_train", "y_test"],
                 name="split_data_node",
             ),
@@ -65,7 +38,7 @@ def create_training_pipeline(**kwargs) -> Pipeline:
             node(
                 func=report_r_squared,
                 inputs=["y_test_pred", "y_test"],
-                outputs=None,
+                outputs="metrics",
                 name="training_report_r_squared_node",
             ),
         ]

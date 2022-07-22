@@ -5,13 +5,14 @@ generated using Kedro 0.18.2
 
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import remove_categorical, handle_na
+from .nodes import handle_categorical, handle_na
+
 
 def create_pipeline(**kwargs) -> Pipeline:
     return pipeline(
         [
             node(
-                func=remove_categorical,
+                func=handle_categorical,
                 inputs="mpg",
                 outputs="mpg_wout_cat_col",
                 name="remove_categorical_node"
